@@ -12,7 +12,7 @@ from fastapi.responses import JSONResponse
 from deep_translator import GoogleTranslator
 import whisper
 
-# --- System Setup for Whisper ---
+#System Setup for Whisper
 ffmpeg_source = imageio_ffmpeg.get_ffmpeg_exe()
 venv_scripts_dir = os.path.join(sys.prefix, "Scripts")
 target_ffmpeg = os.path.join(venv_scripts_dir, "ffmpeg.exe")
@@ -26,14 +26,14 @@ warnings.filterwarnings("ignore", category=UserWarning)
 print("Loading Whisper model...")
 whisper_model = whisper.load_model("base")
 
-# --- FastAPI App Initialization ---
+#FastAPI App Initialization
 app = FastAPI(
     title="Multimodal Translation API",
     description="Asynchronous backend for context-aware multimodal translation",
     version="1.0.0"
 )
 
-# --- Helper Functions ---
+#Helper Functions
 def encode_image(image_path: str) -> str:
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
@@ -70,7 +70,7 @@ async def process_visual(image_path: str) -> str:
         print(f"Visual processing error: {e}")
         return "Error analyzing visual context."
 
-# --- Core API Endpoints ---
+#Core API Endpoints
 @app.get("/")
 async def root():
     return {"status": "online", "message": "Gateway is running"}
@@ -79,9 +79,9 @@ async def root():
 async def translate_video(file: UploadFile = File(...)):
     """Accepts a video, processes audio and visual context concurrently, and returns a translation."""
     
-    # Save the uploaded file to a temporary location
+    
     try:
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as temp_video:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".mpeg") as temp_video:
             content = await file.read()
             temp_video.write(content)
             temp_video_path = temp_video.name
@@ -89,8 +89,7 @@ async def translate_video(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Failed to save uploaded file: {e}")
 
     try:
-        # For this stage, we assume 'sample.jpeg' in test_lab is our extracted keyframe.
-        # (In the next stage, we will write code to dynamically extract frames from the uploaded video).
+        
         dummy_frame_path = os.path.join("test_lab", "sample.jpeg")
         
         if not os.path.exists(dummy_frame_path):
