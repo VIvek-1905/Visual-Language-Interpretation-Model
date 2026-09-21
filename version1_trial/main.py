@@ -15,7 +15,7 @@ from fastapi.responses import JSONResponse
 from deep_translator import GoogleTranslator
 import whisper
 
-#System Setup for Whisper
+# System Setup for Whisper
 ffmpeg_source = imageio_ffmpeg.get_ffmpeg_exe()
 venv_scripts_dir = os.path.join(sys.prefix, "Scripts")
 target_ffmpeg = os.path.join(venv_scripts_dir, "ffmpeg.exe")
