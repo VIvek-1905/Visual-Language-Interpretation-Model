@@ -1,4 +1,7 @@
+from motor.motor_asyncio import AsyncIOMotorClient
+from datetime import datetime
 import os
+from dotenv import load_dotenv
 import sys
 import shutil
 import base64
@@ -12,7 +15,7 @@ from fastapi.responses import JSONResponse
 from deep_translator import GoogleTranslator
 import whisper
 
-# --- System Setup for Whisper ---
+#System Setup for Whisper
 ffmpeg_source = imageio_ffmpeg.get_ffmpeg_exe()
 venv_scripts_dir = os.path.join(sys.prefix, "Scripts")
 target_ffmpeg = os.path.join(venv_scripts_dir, "ffmpeg.exe")
@@ -22,18 +25,26 @@ if not os.path.exists(target_ffmpeg):
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
-# Pre-load Whisper model (using 'base' for speed during dev)
+# Pre-load Whisper model
 print("Loading Whisper model...")
 whisper_model = whisper.load_model("base")
 
-# --- FastAPI App Initialization ---
+
 app = FastAPI(
     title="Multimodal Translation API",
     description="Asynchronous backend for context-aware multimodal translation",
     version="1.0.0"
 )
 
-# --- Helper Functions ---
+#db setup
+load_dotenv()
+mongo_details=os.getenv("mongo_details")
+client=AsyncIOMotorClient(mongo_details)
+database=client.multimodal_translationn
+results_collection=database.get_collection("translation_results")
+
+
+#Helper Functions
 def encode_image(image_path: str) -> str:
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
@@ -89,14 +100,11 @@ async def translate_video(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Failed to save uploaded file: {e}")
 
     try:
-        # For this stage, we assume 'sample.jpeg' in test_lab is our extracted keyframe.
-        # (In the next stage, we will write code to dynamically extract frames from the uploaded video).
         dummy_frame_path = os.path.join("test_lab", "sample.jpeg")
         
         if not os.path.exists(dummy_frame_path):
             raise HTTPException(status_code=500, detail="Missing test keyframe (sample.jpeg) in test_lab folder.")
 
-        # Execute Audio and Visual processing CONCURRENTLY
         audio_task = asyncio.create_task(process_audio(temp_video_path))
         visual_task = asyncio.create_task(process_visual(dummy_frame_path))
         
@@ -111,6 +119,16 @@ async def translate_video(file: UploadFile = File(...)):
         # Cleanup temp file
         os.remove(temp_video_path)
 
+        # Database Persistence
+        db_record = {
+            "timestamp": datetime.now(datetime.UTC).isoformat(),
+            "spoken_text": spoken_text,
+            "visual_context": visual_context,
+            "fused_prompt": fused_prompt,
+            "translation": translated_text
+        }
+        await results_collection.insert_one(db_record)
+
         return JSONResponse(content={
             "audio_transcription": spoken_text,
             "visual_context": visual_context,
@@ -119,7 +137,7 @@ async def translate_video(file: UploadFile = File(...)):
         })
 
     except Exception as e:
-        # Ensure temp file is deleted even if it crashes
+        #ensure temp file deleted
         if os.path.exists(temp_video_path):
             os.remove(temp_video_path)
         raise HTTPException(status_code=500, detail=str(e))
