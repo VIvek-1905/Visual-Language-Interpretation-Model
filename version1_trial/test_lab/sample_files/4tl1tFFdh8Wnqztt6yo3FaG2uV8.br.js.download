@@ -1,0 +1,1 @@
+!function(){var s=null,n=0;function o(){!function o(e){if(e&&(n=0),!(n>60)){n++;var t=_w.CursorProgress||_w.CursorProgressFull;void 0!==t&&t&&t.bind(),s&&sb_ct(s),s=sb_st(o,1e3)}}(!0)}o(),"u">typeof sj_be&&sj_be(_w,"load",o),"u">typeof sj_evt&&(sj_evt.bind("onP1",o),sj_evt.bind("onP1Lazy",o),sj_evt.bind("ajaxReady",o),sj_evt.bind("ajax.load",o))}();
