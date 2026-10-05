@@ -7,3 +7,7 @@ __pycache__/
 *.mpeg
 *.wav
 **/version1_trial/.env
+
+#secrets
+.env
+.env.local
