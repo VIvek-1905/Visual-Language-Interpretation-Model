@@ -17,7 +17,11 @@ audio_processor = AudioProcessor()
 vision_processor = VisionProcessor()
 fusion_engine = SemanticFusionEngine()
 
-@router.post("/api/translate-video")
+@router.post(
+    "/api/translate-video", 
+    tags=["Core AI Pipeline"],
+    summary="Run Multimodal Arbitration"
+)
 async def translate_video(file: UploadFile = File(...)):
     try:
         # temp file for upload

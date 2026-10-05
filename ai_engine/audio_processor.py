@@ -5,7 +5,7 @@ import asyncio
 import warnings
 import whisper
 import imageio_ffmpeg
-from config import WHISPER_MODEL_SIZE
+from ai_engine.config import WHISPER_MODEL_SIZE
 
 warnings.filterwarnings("ignore", category=UserWarning)
 

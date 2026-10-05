@@ -2,7 +2,7 @@ import os
 import base64
 import asyncio
 import requests
-from config import OLLAMA_API_URL, VISION_MODEL_NAME
+from ai_engine.config import OLLAMA_API_URL, VISION_MODEL_NAME
 
 class VisionProcessor:
     '''
