@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from motor.motor_asyncio import AsyncIOMotorClient
 
 # Load variables from .env file
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
 
 MONGO_DETAILS = os.getenv("MONGO_DETAILS")
 
