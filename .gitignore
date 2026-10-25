@@ -11,3 +11,14 @@ __pycache__/
 #secrets
 .env
 .env.local
+
+# Frontend dependencies and build output
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Python environment
+venv/
+.venv/
+__pycache__/
+*.py[cod]
